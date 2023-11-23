@@ -16,13 +16,6 @@ import base64
 
 app = Flask(__name__)
 
-# Carregue seu conjunto de dados aqui
-# X, y = ...
-
-# Divida o conjunto de dados em treinamento e teste
-# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-# Coleta e Preparação de Dados.
 iris = load_iris()
 X = iris.data # caracteristica
 y = iris.target # rotulos
@@ -53,9 +46,9 @@ classifiers_params = {
 @app.route('/', methods=['GET', 'POST'])
 def index():
     global selected_classifier
-    confusion_matrix_img = ""  # Variável para armazenar a imagem da matriz de confusão
-    selected_classifier =  'KNN'
-    classification_results = {}  # Variável para armazenar outros resultados da classificação
+    confusion_matrix_img = "" 
+
+    classification_results = {} 
     if request.method == 'POST':
         classifier_name = request.form['classifier']
         params = {}
@@ -122,23 +115,19 @@ def index():
         classifier = classifiers[classifier_name].set_params(**params)
         
 
-        # Treinamento do Modelo.
         classifier.fit(X_train, y_train)
 
-        # Teste / Previsão do Modelo.
         y_pred = classifier.predict(X_test)
 
         print(f'PRED: {y_pred}')
         print(f'RESPOSTA: {y_test}')
-        # Treine o classificador e obtenha resultados
+
         accuracy = accuracy_score(y_test, y_pred)
         f1 = f1_score(y_test, y_pred, average='macro')
         classes = iris.target_names.tolist()
         confusion_matrix_img = plot_confusion_matrix(y_test, y_pred,classes)
         
         classification_results = {"accuracy": round(accuracy_score(y_test, y_pred),3), "macro-avg": round(f1_score(y_test, y_pred, average='macro'),3)}
-
-        # Adicione a lógica para exibir os resultados na página
 
     return render_template('index.html', classifiers=list(classifiers.keys()),classifier_params=classifiers_params, confusion_matrix_img=confusion_matrix_img, classification_results=classification_results)
 

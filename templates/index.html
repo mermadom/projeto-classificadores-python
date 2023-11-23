@@ -11,7 +11,7 @@
             var classifierSelect = document.getElementById("classifier");
             var selectedClassifier = classifierSelect.options[classifierSelect.selectedIndex].value;
 
-            // Lista de parâmetros correspondentes a cada classificador
+            // Lista dos parametros correspondentes a cada classificador
             var parameters = {
                 '---': [''],
                 'KNN': ['KNN_n_neighbors', 'KNN_algorithm', 'KNN_leaf_size'],
@@ -20,27 +20,18 @@
                 'Decision Tree': ['DT_max_leaf_nodes', 'DT_random_state', 'DT_max_depth'],
                 'Random Forest': ['RF_n_estimators', 'RF_random_state', 'RF_max_depth']
             };
-           // Esconda todos os campos de parâmetros
+            
+           // Esconde todos os campos de parâmetros
            if (selectedClassifier !== ""){
-                $('[id$="_input"]').hide();  // Oculta todos os campos de parâmetros
-                $('[id$="_label"]').hide();  // Oculta todos os campos de parâmetros
+                $('[id$="_input"]').hide();  // Oculta parâmetros de imput
+                $('[id$="_label"]').hide();  // Oculta parâmetros de label
 
-                // Exiba os campos de parâmetros correspondentes ao classificador selecionado
+                // Exibe os campos de parâmetros correspondentes ao classificador selecionado
                 var selectedParams = parameters[selectedClassifier];
                 selectedParams.forEach(function(param) {
-                    $('#' + param + '_input').show();  // Exibe os campos específicos do classificador
-                    $('#' + param + '_label').show();  // Exibe os campos específicos do classificador
+                    $('#' + param + '_input').show();  
+                    $('#' + param + '_label').show();  
                 });
-            }
-        }
-
-         // Função para exibir a matriz de confusão
-        function showConfusionMatrix() {
-            var imgSrc = "{{ confusion_matrix_img }}";
-            if (imgSrc !== "") {
-                var imgElement = document.getElementById("confusionMatrixImg");
-                imgElement.src = "data:image/png;base64, " + imgSrc;
-                imgElement.style.display = "block";
             }
         }
     </script>
@@ -53,7 +44,7 @@
         <div>
             <div class="row gx-5 align-items-center">
                 <div class="col-lg-6">
-                    <form method="POST" action="/" oninput="updateParameters()" onsubmit="showConfusionMatrix();">
+                    <form method="POST" action="/" oninput="updateParameters()">
                         <label for="classifier">Select Classifier:</label>
                         <select name="classifier" id="classifier">
                             {% for classifier in classifiers %}
