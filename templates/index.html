@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Web App</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <script>
+        function updateParameters() {
+            var classifierSelect = document.getElementById("classifier");
+            var selectedClassifier = classifierSelect.options[classifierSelect.selectedIndex].value;
+
+            // Lista de parâmetros correspondentes a cada classificador
+            var parameters = {
+                '---': [''],
+                'KNN': ['KNN_n_neighbors', 'KNN_algorithm', 'KNN_leaf_size'],
+                'SVM': ['SVM_degree', 'SVM_gamma', 'SVM_max_iter'],
+                'MLP': ['MLP_random_state', 'MLP_max_iter', 'MLP_activation'],
+                'Decision Tree': ['DT_max_leaf_nodes', 'DT_random_state', 'DT_max_depth'],
+                'Random Forest': ['RF_n_estimators', 'RF_random_state', 'RF_max_depth']
+            };
+           // Esconda todos os campos de parâmetros
+           if (selectedClassifier !== ""){
+                $('[id$="_input"]').hide();  // Oculta todos os campos de parâmetros
+                $('[id$="_label"]').hide();  // Oculta todos os campos de parâmetros
+
+                // Exiba os campos de parâmetros correspondentes ao classificador selecionado
+                var selectedParams = parameters[selectedClassifier];
+                selectedParams.forEach(function(param) {
+                    $('#' + param + '_input').show();  // Exibe os campos específicos do classificador
+                    $('#' + param + '_label').show();  // Exibe os campos específicos do classificador
+                });
+            }
+        }
+
+         // Função para exibir a matriz de confusão
+        function showConfusionMatrix() {
+            var imgSrc = "{{ confusion_matrix_img }}";
+            if (imgSrc !== "") {
+                var imgElement = document.getElementById("confusionMatrixImg");
+                imgElement.src = "data:image/png;base64, " + imgSrc;
+                imgElement.style.display = "block";
+            }
+        }
+    </script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top shadow-sm">
+        <h2>IRIS MACHINE LERNER</h2>
+    </nav>
+    <header class="masthead">
+        <div>
+            <div class="row gx-5 align-items-center">
+                <div class="col-lg-6">
+                    <form method="POST" action="/" oninput="updateParameters()" onsubmit="showConfusionMatrix();">
+                        <label for="classifier">Select Classifier:</label>
+                        <select name="classifier" id="classifier">
+                            {% for classifier in classifiers %}
+                                <option value="{{ classifier }}">{{ classifier }}</option>
+                            {% endfor %}
+                        </select>
+                        <br>
+                        <br>
+                        <label style="display: none;" id="KNN_n_neighbors_label">N_neighbors:</label>
+                        <input type="text" name="KNN_n_neighbors" id="KNN_n_neighbors_input" value="0.0" style="display: none;">
+                        <label style="display: none;" id="KNN_algorithm_label">Algorithm:</label>
+                        <select name="KNN_algorithm" id="KNN_algorithm_input" style="display: none;">
+                            <option value="auto">Auto</option>
+                            <option value="ball_tree">Ball_tree</option>
+                            <option value="kd_tree">Kd_tree</option>
+                            <option value="brute">Brute</option>
+                        </select>
+                        <label style="display: none;" id="KNN_leaf_size_label">Leaf_size:</label>
+                        <input type="text" name="KNN_leaf_size" id="KNN_leaf_size_input" value="0.0"  style="display: none;">
+
+                        <label style="display: none;"  id="SVM_degree_label">Degree:</label>
+                        <input type="text" name="SVM_degree" id="SVM_degree_input" value="0.0"  style="display: none;">
+                        <label style="display: none;"  id="SVM_gamma_label">Gamma:</label>
+                        <select name="SVM_gamma" id="SVM_gamma_input" style="display: none;">
+                            <option value="auto">Auto</option>
+                            <option value="scale">Scale</option>
+                        </select>
+                        <label style="display: none;"  id="SVM_max_iter_label">Max_iter:</label>
+                        <input type="text" name="SVM_max_iter" id="SVM_max_iter_input" value="0.0"  style="display: none;">
+
+                        <label style="display: none;" id="MLP_random_state_label">Random_state:</label>
+                        <input type="text" name="MLP_random_state" id="MLP_random_state_input" value="0.0"  style="display: none;">
+                        <label style="display: none;" id="MLP_max_iter_label">Max_iter:</label>
+                        <input type="text" name="MLP_max_iter" id="MLP_max_iter_input" value="0.0"  style="display: none;">
+                        <label style="display: none;" id="MLP_activation_label">Activation:</label>
+                        <select name="MLP_activation" id="MLP_activation_input" style="display: none;">
+                            <option value="relu">Relu</option>
+                            <option value="tanh">Tanh</option>
+                            <option value="logistic">Logistic</option>
+                            <option value="identity">Identity</option>
+                        </select>
+
+                        <label style="display: none;" id="DT_max_leaf_nodes_label">Max_leaf_nodes:</label>
+                        <input type="text" name="DT_max_leaf_nodes" id="DT_max_leaf_nodes_input" value="0.0"  style="display: none;">
+                        <label style="display: none;" id="DT_random_state_label">Random_state:</label>
+                        <input type="text" name="DT_random_state" id="DT_random_state_input" value="0.0"  style="display: none;">
+                        <label style="display: none;" id="DT_max_depth_label">Max_depth:</label>
+                        <input type="text" name="DT_max_depth" id="DT_max_depth_input" value="0.0"  style="display: none;"> 
+
+                        <label style="display: none;" id="RF_n_estimators_label">N_estimators:</label>
+                        <input type="text" name="RF_n_estimators" id="RF_n_estimators_input" value="0.0"  style="display: none;" >
+                        <label style="display: none;" id="RF_random_state_label">Random_state:</label>
+                        <input type="text" name="RF_random_state" id="RF_random_state_input" value="0.0"  style="display: none;">
+                        <label style="display: none;" id="RF_max_depth_label">Max_depth:</label>
+                        <input type="text" name="RF_max_depth" id="RF_max_depth_input" value="0.0"  style="display: none;">
+                        <br>
+                        <br>
+                        <button type="submit">Run Classification</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </header>
+
+    {% if confusion_matrix_img%}
+        <img src="data:image/png;base64, {{ confusion_matrix_img }}" alt="Red dot" />
+
+        <!-- Seção de resultados da classificação -->
+        <div id="classificationResults" class="row gx-5 align-items-center">
+            {% for classific in classification_results %}
+                <p>{{classific}}: {{classification_results[classific]}} </p>
+            {% endfor %}
+
+            <p id="accuracyResult"></p>
+            <p id="f1ScoreResult"></p>
+        </div>
+    {%endif%}
+</body>
+</html>
